@@ -1,0 +1,35 @@
+package texas.hold.em.domain.rule;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.LongAdder;
+
+import texas.hold.em.domain.Card;
+import texas.hold.em.domain.Deck;
+import texas.hold.em.domain.Hand;
+import texas.hold.em.domain.Value;
+
+public class OnePairRule extends Rule {
+
+  /**
+   * Pick highest pair. Pick top 3 from rest
+   */
+  @Override
+  public Hand pick(Deck deck) {
+    TreeMap<Value, LongAdder> possiblePairValues = findPossiblePairValues(deck);
+    if (possiblePairValues.isEmpty())
+      return null;
+
+    Hand hand = new Hand();
+    
+    Value highestRankPairValue = possiblePairValues.lastKey();
+    pickPair(highestRankPairValue, deck, hand);
+
+    List<Card> cards = deck.getCards();
+    Collections.sort(cards);
+    hand.addCards(cards.subList(0, Hand.HAND_SIZE-2));
+    
+    return hand;
+  }
+}
